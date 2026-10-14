@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use(cors({
-    origin:"http://localhost:5173"
+    origin: process.env.FRONTEND_URL || "http://localhost:5173"
 }))
 // /api
 app.use('/api', mainRouter);
@@ -22,15 +22,17 @@ async function startServer(){
     try{
         const connection = await db.getConnection();
         connection.release();
-        app.listen(3788,err => {
+        const port = process.env.PORT || 3788;
+        app.listen(port,err => {
             if(err){
                 throw err;
             } 
-            console.log('server is running on port http://localhost:3788');
+            console.log(`server is running on port ${port}`);
         });
     }
     catch(err){
         console.error('error starting server:', err.message);
+        process.exitCode = 1;
     }
 }
 
